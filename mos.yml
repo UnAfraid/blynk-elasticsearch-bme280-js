@@ -1,54 +1,50 @@
-author: mongoose-os
-description: An empty app that does nothing
+author: Rumen Nikiforov
+description: Using BME280 sensor and sending the results to Elastic Search and Blynk
 version: 1.0
 
-libs_version: ${mos.version}
-modules_version: ${mos.version}
-mongoose_os_version: ${mos.version}
+libs_version: ${mos_version}
+modules_version: ${mos_version}
+mongoose_os_version: ${mos_version}
 
 # Optional. List of tags for online search.
 tags:
-  - c
-
-# List of files / directories with C sources. No slashes at the end of dir names.
-sources:
-  - src
+  - js
+  - mobile
+  - cloud
+  - arduino
+  - elastic search
 
 # List of dirs. Files from these dirs will be copied to the device filesystem
 filesystem:
   - fs
 
-# Custom configuration entries, settable via "device configuration"
-config_schema:
-# Below is a custom firmware configuration example.
-# Uncomment and modify according to your needs.
-# These settings get compiled into the C structure, and can be accessed
-# from the C code this way:
-#
-# printf("Hello from %s!\n", get_cfg()->device.id);
-#
-# Settings are cool: can be modified remotely without full firmware upgrade!
-#
-# To see all available compiled settings, buid the firmware and open
-# build/gen/sys_config.c or build/gen/sys_config.h file.
-#
-#  - ["my_app", "o", {title: "My app custom settings"}]
-#  - ["my_app.bool_value", "b", false, {title: "Some boolean value"}]
-#  - ["my_app.string_value", "s", "", {title: "Some string value"}]
-#  - ["my_app.int_value", "i", 123, {title: "Some integer value"}]
-#
-# Also, you can override existing values:
-#
-#  - ["wifi.sta.ssid", "my_ssid"]
-#  - ["wifi.sta.pass", "my_pass"]
-
-# List of libraries used by this app, in order of initialisation
 libs:
-  - origin: https://github.com/mongoose-os-libs/ca-bundle
+    # common mgos libs
   - origin: https://github.com/mongoose-os-libs/rpc-service-config
   - origin: https://github.com/mongoose-os-libs/rpc-service-fs
   - origin: https://github.com/mongoose-os-libs/rpc-uart
-  - origin: https://github.com/mongoose-os-libs/wifi
+  - origin: https://github.com/mongoose-os-libs/spi
+  - origin: https://github.com/mongoose-os-libs/i2c
+
+    # libs necessary for the current app
+  - origin: https://github.com/mongoose-os-libs/blynk
+  - origin: https://github.com/mongoose-os-libs/mjs
+  - origin: https://github.com/mongoose-os-libs/wifi  
+  
+    # bme280
+  - origin: https://github.com/mongoose-os-libs/arduino-adafruit-bme280
+
+config_schema:
+  - ["i2c.enable", true]
+  - ["i2c.sda_gpio", 14]
+  - ["i2c.scl_gpio", 12]
+  - ["i2c.address", "i", 0x77, {title: "The device i2c address usually 0x76 or 0x77"}]
+  - ["elastic", "o", {title: "elastic-search object"}]
+  - ["elastic.repeatTime", "i", 30000, {title: "the repeat time that will send data to elastic-search"}]
+  - ["elastic.url", "s", "", {title: "the elastic-search url example: http://elastic-search.local/sensors/bme280"}]
+  - ["elastic.logOnSuccess", "b", false, {title: "displays the response from elastic-search"}]
+  - ["elastic.headers", "o", {title: "additional headers"}]
+  - ["elastic.headers.authorization", "s", "", {title: "authorization header"}]
 
 # Used by the mos tool to catch mos binaries incompatible with this file format
-manifest_version: 2017-05-18
+skeleton_version: 2017-05-18

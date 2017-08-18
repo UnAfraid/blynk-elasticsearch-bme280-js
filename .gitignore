@@ -1,0 +1,3 @@
+**/build/**
+**/src/conf_schema.yaml
+**/*.bat
